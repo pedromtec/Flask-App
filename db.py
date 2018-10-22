@@ -22,3 +22,14 @@ class Db:
         con.commit()
         con.close()
         return data
+    def find_all(self, sql):
+        con = sqlite3.connect(self.path)
+        cur = con.cursor()
+        cur.execute(sql)
+        data = cur.fetchall()
+        con.commit()
+        con.close()
+        return data
+    def update(self, sql):
+        self.execute_query(sql)
+

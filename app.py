@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, flash, session, redirect, url_for, logging
-from data import dados
 from forms import RegisterForm, EditorialForm
 from passlib.hash import sha256_crypt
 from db import Db
@@ -18,13 +17,19 @@ def about():
     return render_template('about.html')
 
 
-@app.route('/articles')
-def articles():
-    return render_template('articles.html', articles = dados)
+@app.route('/editorials')
+def editorials():
+    editorials = db.find_all('SELECT * FROM editorials')
+    if len(editorials) > 0:
+        return render_template('editorials.html', editorials=editorials)
+    else:
+        return render_template('editorials.html')
+    
 
-@app.route('/article/<string:id>/')
-def article(id):
-    return render_template('article.html', id = id)
+@app.route('/editorial/<string:id>/')
+def editorial(id):
+    editorial = db.find_one("SELECT * FROM editorials WHERE id = '{}'".format(id))
+    return render_template('editorial.html', editorial=editorial)
 
 #user register
 @app.route('/register', methods=['GET', 'POST'])
@@ -47,9 +52,7 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password_candidate = request.form['password']
-        print(username)
         data = db.find_one("SELECT * FROM users WHERE username = '{}'".format(username))
-        print(data)
         if data != None:
             password = data[4]
             if sha256_crypt.verify(password_candidate, password):
@@ -83,7 +86,12 @@ def is_logged_in(f):
 @app.route('/dashboard')
 @is_logged_in
 def dashboard():
-    return render_template('dashboard.html')
+    editorials = db.find_all("SELECT * FROM editorials where author = '{}'".format(session['username']))
+    if len(editorials) > 0:
+         return render_template('dashboard.html', editorials=editorials)
+    else:
+        return render_template('dashboard.html')
+   
 
 #logout
 @app.route('/logout')
@@ -105,8 +113,23 @@ def add_editorial():
         return redirect(url_for('dashboard'))
     return render_template('add_editorial.html', form = form)
 
+#Edit editorial
+@app.route('/edit_editorial/<string:id>', methods = ['POST', 'GET'])
+@is_logged_in
+def edit_editorial(id):
+    form = EditorialForm(request.form)
+    if request.method == 'POST' and form.validate():
+        title = form.title.data
+        body = form.body.data
+        db.update("UPDATE editorials SET title='{}', body='{}' WHERE id = '{}'".format(title, body, id))
+        flash('Editorial editado', 'sucess')
+        return redirect(url_for('dashboard'))
+        
+    editorial = db.find_one("SELECT * FROM editorials WHERE id = '{}'".format(id))
+    form.title.data = editorial[1]
+    form.body.data = editorial[3]
 
-
+    return render_template('edit_editorial.html', form = form)
 
 if __name__ == '__main__':
     app.secret_key='secret123'

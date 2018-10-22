@@ -1,0 +1,10 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+  <h1>{{editorial[1]}}</h1>
+  <small>Escrito por {{editorial[2]}} em {{editorial[4]}}</small>
+  <hr>
+  <div>
+  {{editorial[3] | safe}}
+  </div>
+{% endblock %}

@@ -3,5 +3,26 @@
 {% block body %}
   <h1>Dashboard <small> Bem vindo {{session.username}}</small></h1>
   <a class="btn btn-success"href="/add_editorial" > Add Editorial</a>
- 
+  <hr>
+  <table class="table table-striped">
+      <tr>
+        <th>ID</th>
+        <th>Titulo</th>
+        <th>Autor</th>
+        <th>Data</th>
+        <th></th>
+        <th></th>
+      </tr>
+      {% for editorial in editorials %}
+        <tr>
+          <td>{{editorial[0]}}</td>
+          <td>{{editorial[1]}}</td>
+          <td>{{editorial[2]}}</td>
+          <td>{{editorial[4]}}</td>
+          <td><a href="edit_editorial/{{editorial[0]}}" class="btn btn-default pull-right">Editar</a></td>
+          <td><a href="#" class="btn btn-danger">Apagar</a></td>
+        </tr>
+      {% endfor %}
+    </table>
+   
 {% endblock %}

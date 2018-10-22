@@ -1,0 +1,10 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+  <h1>Editoriais</h1>
+  <ul class="list-group">
+    {% for editorial in editorials %}
+      <li class="list-group-item"><a href="editorial/{{editorial[0]}}">{{editorial[1]}}</a></li>
+    {% endfor %}
+  </ul>
+{% endblock %}
