@@ -32,4 +32,5 @@ class Db:
         return data
     def update(self, sql):
         self.execute_query(sql)
-
+    def delete(self, sql):
+        self.execute_query(sql)

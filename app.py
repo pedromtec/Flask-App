@@ -124,12 +124,19 @@ def edit_editorial(id):
         db.update("UPDATE editorials SET title='{}', body='{}' WHERE id = '{}'".format(title, body, id))
         flash('Editorial editado', 'sucess')
         return redirect(url_for('dashboard'))
-        
+
     editorial = db.find_one("SELECT * FROM editorials WHERE id = '{}'".format(id))
     form.title.data = editorial[1]
     form.body.data = editorial[3]
 
     return render_template('edit_editorial.html', form = form)
+
+@app.route('/delete_editorial/<string:id>', methods = ['POST'])
+@is_logged_in
+def delete_editorial(id):
+    db.delete("DELETE FROM editorials WHERE id = '{}'".format(id))
+    flash('Editorial apagado', 'sucess')
+    return redirect(url_for('dashboard'))
 
 if __name__ == '__main__':
     app.secret_key='secret123'
