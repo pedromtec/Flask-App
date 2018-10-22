@@ -37,7 +37,7 @@ def register():
         password = sha256_crypt.encrypt(str(form.password.data))
         db.save("INSERT INTO users(name, email, username, password) VALUES('{}', '{}','{}', '{}')".format(name, email, username, password))
         flash('Boa, agora você pode logar no IFCE-CP', 'success')
-        return render_template('login.html')
+        return redirect(url_for('login'))
 
     return render_template('register.html', form=form)
 
@@ -96,6 +96,17 @@ def logout():
 @app.route('/add_editorial', methods = ['POST', 'GET'])
 @is_logged_in
 def add_editorial():
+    form = EditorialForm(request.form)
+    if request.method == 'POST' and form.validate():
+        title = form.title.data
+        body = form.body.data
+        db.save("INSERT INTO editorials(title, body, author) VALUES('{}', '{}','{}')".format(title, body, session['username']))
+        flash('Editorial salvo com sucesso!', 'success')
+        return redirect(url_for('dashboard'))
+    return render_template('add_editorial.html', form = form)
+
+
+
 
 if __name__ == '__main__':
     app.secret_key='secret123'
